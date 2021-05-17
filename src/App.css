@@ -6,3 +6,21 @@
 .App > div {
   margin-right: 50px;
 }
+
+.completedTask {
+  opacity: 0.5;
+}
+
+.activeButton {
+  background: cornflowerblue;
+}
+
+.error {
+  border: crimson 1px solid;
+  border-radius: 3px;
+}
+
+.errorMessage {
+  height: 20px;
+  color: crimson;
+}

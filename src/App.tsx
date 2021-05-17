@@ -1,27 +1,33 @@
 import React, {useState} from 'react';
 import './App.css';
 import ToDoList from "./ToDoList";
+import {v1} from "uuid";
 
 export type TaskType = {
-    id: number
+    id: string
     title: string
     isDone: boolean
 }
-
 export type FilterTasksType = 'all' | 'active' | 'completed'
 
 
 function App() {
-
     let [tasks, setTasks] = useState<Array<TaskType>>([
-        {id: 1, title: 'HTML', isDone: true},
-        {id: 2, title: 'CSS', isDone: true},
-        {id: 3, title: 'React', isDone: false},
-        {id: 4, title: 'Redux', isDone: false},
+        {id: v1(), title: 'HTML', isDone: true},
+        {id: v1(), title: 'CSS', isDone: true},
+        {id: v1(), title: 'React', isDone: false},
+        {id: v1(), title: 'Redux', isDone: false},
     ])
     let [filter, setFilter] = useState<FilterTasksType>('all')
 
-    const removeTask = (taskId: number) => {
+
+    //вне компоненты
+    // export const deleteAffair = (affairs: Array<AffairType>, _id: number): Array<AffairType> => {
+    //     return affairs.filter(a => a._id !== _id)
+    // }
+    //внутри компоненты 
+    // const deleteAffairCallback = (_id: number) => setAffairs(deleteAffair(affairs, _id))
+    const removeTask = (taskId: string) => {
         let filteredTasks = tasks.filter(t => t.id !== taskId)
         setTasks(filteredTasks)
     }
@@ -38,15 +44,12 @@ function App() {
     }
 
     const addTask = (taskTitle: string) => {
-        let newTask = {id: Math.random() * 100, title: taskTitle, isDone: false}
-        let newTasks = [...tasks, newTask]
+        let newTask = {id: v1(), title: taskTitle, isDone: false}
+        let newTasks = [newTask, ...tasks]
         setTasks(newTasks)
     }
-    const tickTask = (taskId: number) => {
-        let newTasks = tasks.map(t => {
-            if (t.id === taskId) t.isDone = !t.isDone
-            return t
-        })
+    const tickTask = (taskId: string, isDone: boolean) => {
+        let newTasks = tasks.map(t => (t.id === taskId) ? {...t, isDone} : t)
         setTasks(newTasks)
     }
 
@@ -56,10 +59,10 @@ function App() {
           <ToDoList title={'What to do'}
                     tasks={filterTasks()}
                     removeTask={removeTask}
+                    filter={filter}
                     changeTasksFilter={changeTasksFilter}
                     addTask={addTask}
                     tickTask={tickTask}
-
           />
       </div>
     );
