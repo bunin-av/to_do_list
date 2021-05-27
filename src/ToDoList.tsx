@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {ChangeEvent, useState} from "react";
 import {FilterTasksType, TaskType} from "./App";
 
 
@@ -6,10 +6,12 @@ type ToDoListPropsType = {
     title: string
     tasks: Array<TaskType>
     filter: FilterTasksType
-    removeTask: (taskId: string) => void
-    changeTasksFilter: (filter: FilterTasksType) => void
-    addTask: (taskTitle: string) => void
-    tickTask: (taskId: string, tickTask: boolean) => void
+    todoListID: string
+    removeTask: (taskId: string, todoListID: string) => void
+    changeTasksFilter: (filter: FilterTasksType, todoListID: string) => void
+    addTask: (taskTitle: string, todoListID: string) => void
+    tickTask: (taskId: string, tickTask: boolean, todoListID: string) => void
+    removeTodoList: (todoListID: string) => void
 }
 
 function ToDoList(props: ToDoListPropsType) {
@@ -27,54 +29,65 @@ function ToDoList(props: ToDoListPropsType) {
     }
     const addTask = () => {
         if (newTaskTitle.trim()) {
-            props.addTask(newTaskTitle.trim())
+            props.addTask(newTaskTitle.trim(), props.todoListID)
             setNewTaskTitle('')
         } else {
             setError(true)
         }
-        //
-        // const newTask = newTaskTitle.trim()
-        // if (!newTask) return
-        // props.addTask(newTask)
-        // setNewTaskTitle('')
     }
-    const setClass = (value: string) => props.filter === value ? 'activeButton' : ''
+    const setClass = (value: string) => `button ${props.filter === value ? 'activeButton' : ''}`
+    const changeStatus = (e: ChangeEvent<HTMLInputElement & HTMLUListElement>) => {
+        props.tickTask(e.target.value, e.target.checked, props.todoListID);
+    }
 
-
-    const taskElement = props.tasks.map(t => {
+    const taskElements = props.tasks.map(t => {
         return (
-          <li key={t.id}>
+          <li key={t.id} className='list'>
               <input type="checkbox"
                      checked={t.isDone}
-                     onChange={(e) => props.tickTask(t.id, e.currentTarget.checked)}
+                     value={t.id}
+                // changeStatus={(e) => props.tickTask(t.id, e.currentTarget.checked)}
               />
-              <span className={t.isDone ? 'completedTask' : ''}>{t.title}</span>
-              <button onClick={() => props.removeTask(t.id)}>x</button>
+              <span className={`taskTitle ${t.isDone ? 'completedTask' : ''}`}>{t.title}</span>
+              <button onClick={() => props.removeTask(t.id, props.todoListID)} className='deleteButton'>x</button>
           </li>
         )
     })
 
     return (
       <div>
-          <h3>{props.title}</h3>
+          <h3>
+              {props.title}
+              <button onClick={() => props.removeTodoList(props.todoListID)}>x</button>
+          </h3>
+
           <div>
               <input onChange={addNewTaskText}
                      value={newTaskTitle}
                      onKeyPress={addNewTaskTextByEnter}
                      className={error ? 'error' : ''}
               />
-              <button onClick={addTask}>+</button>
+              <button onClick={addTask} className='addButton'>+</button>
               <div className='errorMessage'>{error ? 'Title required' : ''}</div>
           </div>
           <div>
-              <ul>
-                  {taskElement}
-              </ul>
+              <button
+                onClick={() => props.changeTasksFilter('all', props.todoListID)}
+                className={setClass('all')}>All
+              </button>
+              <button
+                onClick={() => props.changeTasksFilter('active', props.todoListID)}
+                className={setClass('active')}>Active
+              </button>
+              <button
+                onClick={() => props.changeTasksFilter('completed', props.todoListID)}
+                className={setClass('completed')}>Completed
+              </button>
           </div>
           <div>
-              <button onClick={() => props.changeTasksFilter('all')} className={setClass('all')}>All</button>
-              <button onClick={() => props.changeTasksFilter('active')} className={setClass('active')}>Active</button>
-              <button onClick={() => props.changeTasksFilter('completed')} className={setClass('completed')}>Completed</button>
+              <ul onChange={changeStatus}>
+                  {taskElements}
+              </ul>
           </div>
       </div>
     )

@@ -23,4 +23,37 @@
 .errorMessage {
   height: 20px;
   color: crimson;
+  margin: 5px 0 10px;
+}
+
+.button {
+  padding: 5px;
+  border-radius: 5px;
+  margin: 0 5px;
+  border: 1px solid grey;
+  min-width: 50px;
+}
+
+.taskTitle {
+  width: 100px;
+}
+
+.list {
+  display: flex;
+  list-style: none;
+  margin: 10px;
+}
+
+.deleteButton {
+  border-radius: 50%;
+  background: royalblue;
+  border: 1px solid white;
+}
+
+.addButton {
+  border-radius: 3px;
+  background: lightgreen;
+  border: 1px solid lightgreen;
+  /*outline: 1px solid lightgreen;*/
+  margin: 0 10px;
 }
