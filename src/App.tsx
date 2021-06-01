@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import './App.css';
 import ToDoList from "./ToDoList";
 import {v1} from "uuid";
+import {AddItemForm} from "./AddItemForm";
 
 export type TaskType = {
     id: string
@@ -27,8 +28,8 @@ function App() {
     const todoListID_2 = v1()
 
     const [todoLists, setTodoLists] = useState<TodoListType[]>([
-        {id: todoListID_1, title: 'What to learn', filter: 'active'},
-        {id: todoListID_2, title: 'What to buy', filter: 'completed'},
+        {id: todoListID_1, title: 'What to learn', filter: 'all'},
+        {id: todoListID_2, title: 'What to buy', filter: 'all'},
     ])
 
     const [tasks, setTasks] = useState<TasksStateType>({
@@ -48,22 +49,36 @@ function App() {
     })
 
     const removeTask = (taskId: string, todoListID: string) => {
-        tasks[todoListID].filter(t => t.id !== taskId)
-        setTasks(tasks)
+
+        tasks[todoListID] = tasks[todoListID].filter(t => t.id !== taskId)
+        setTasks({...tasks})
     }
-    const changeTasksFilter = (filter: FilterTasksType, todoListID: string) => {
+
+    const changeTodoListFilter = (filter: FilterTasksType, todoListID: string) => {
         const copy = todoLists.map(tl => tl.id === todoListID ? {...tl, filter} : tl)
+        setTodoLists(copy)
+    }
+    const changeTodoListTitle = (title: string, todoListID: string) => {
+        const copy = todoLists.map(tl => tl.id === todoListID ? {...tl, title} : tl)
         setTodoLists(copy)
     }
 
     const addTask = (taskTitle: string, todoListID: string) => {
         let newTask = {id: v1(), title: taskTitle, isDone: false}
         tasks[todoListID].unshift(newTask)
-        setTasks(tasks)
+        setTasks({...tasks})
     }
-    const tickTask = (taskId: string, isDone: boolean, todoListID: string) => {
-        tasks[todoListID].map(t => (t.id === taskId) ? {...t, isDone} : t)
-        setTasks(tasks)
+
+    const changeTaskStatus = (taskId: string, isDone: boolean, todoListID: string) => {
+        const copy = {...tasks}
+        copy[todoListID] = copy[todoListID].map(t => (t.id === taskId) ? {...t, isDone} : t)
+        setTasks({...copy})
+    }
+
+    const changeTaskTitle = (taskId: string, title: string, todoListID: string) => {
+        const copy = {...tasks}
+        copy[todoListID] = copy[todoListID].map(t => (t.id === taskId) ? {...t, title} : t)
+        setTasks({...copy})
     }
 
     const filterTasks = (todoList: TodoListType) => {
@@ -82,29 +97,44 @@ function App() {
         setTodoLists(newTodoLists)
     }
 
+    const addTodoList = (title: string) => {
+        const todoListID = v1()
+        const newTodoList: TodoListType = {
+            id: todoListID,
+            title,
+            filter: 'all',
+        }
+        setTodoLists([...todoLists, newTodoList])
+        setTasks({...tasks, [todoListID]: []})
+    }
+
 
     const todoListsComponents = todoLists.map(t => {
         return (
-          <ToDoList
-            todoListID={t.id}
-            key={t.id}
-            title={t.title}
-            tasks={filterTasks(t)}
-            removeTask={removeTask}
-            filter={t.filter}
-            changeTasksFilter={changeTasksFilter}
-            addTask={addTask}
-            tickTask={tickTask}
-            removeTodoList={removeTodoList}
-          />
+            <ToDoList
+                todoListID={t.id}
+                key={t.id}
+                title={t.title}
+                tasks={filterTasks(t)}
+                removeTask={removeTask}
+                filter={t.filter}
+                changeTasksFilter={changeTodoListFilter}
+                addTask={addTask}
+                tickTask={changeTaskStatus}
+                removeTodoList={removeTodoList}
+                addTodoList={addTodoList}
+                changeTaskTitle={changeTaskTitle}
+                changeTodoListTitle={changeTodoListTitle}
+            />
         )
     })
 
 
     return (
-      <div className='App'>
-          {todoListsComponents}
-      </div>
+        <div className='App'>
+            <AddItemForm addItem={addTodoList}/>
+            {todoListsComponents}
+        </div>
     );
 }
 
