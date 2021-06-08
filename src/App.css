@@ -1,3 +1,4 @@
+/*
 .App {
   padding: 30px;
   display: flex;
@@ -5,10 +6,6 @@
 
 .App > div {
   margin-right: 50px;
-}
-
-.completedTask {
-  opacity: 0.5;
 }
 
 .activeButton {
@@ -54,6 +51,10 @@
   border-radius: 3px;
   background: lightgreen;
   border: 1px solid lightgreen;
-  /*outline: 1px solid lightgreen;*/
   margin: 0 10px;
+}*/
+
+
+.completedTask {
+  opacity: 0.5;
 }

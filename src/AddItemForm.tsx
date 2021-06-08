@@ -1,4 +1,6 @@
 import React, {useState} from "react";
+import {IconButton, TextField} from "@material-ui/core";
+import {AddCircleOutline} from "@material-ui/icons";
 
 type AddItemFormPropsType = {
     addItem: (title: string) => void
@@ -14,7 +16,7 @@ export function AddItemForm(props: AddItemFormPropsType) {
     }
 
     const addItem = () => {
-        if(props.addItem){
+        if (props.addItem) {
             if (newItemTitle.trim()) {
                 props.addItem(newItemTitle.trim())
                 setNewItemTitle('')
@@ -30,14 +32,17 @@ export function AddItemForm(props: AddItemFormPropsType) {
 
     return (
         <div>
-            <input onChange={addNewTaskText}
-                   value={newItemTitle}
-                   onKeyPress={addNewItemTextByEnter}
-                   className={error ? 'error' : ''}
-                   onBlur={addItem}
+            <TextField
+                label={'Title'}
+                onChange={addNewTaskText}
+                value={newItemTitle}
+                onKeyPress={addNewItemTextByEnter}
+                error={error}
+                helperText={error && 'Title required'}
             />
-                <button onClick={addItem} className='addButton'>+</button>
-            <div className='errorMessage'>{error ? 'Title required' : ''}</div>
+            <IconButton onClick={addItem} color={'secondary'} style={{opacity: 0.5}}>
+                <AddCircleOutline/>
+            </IconButton>
         </div>
     )
 }
