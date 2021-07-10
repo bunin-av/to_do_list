@@ -1,6 +1,5 @@
-import React from 'react';
+import React, {useCallback} from 'react';
 import './App.css';
-import ToDoList from "./ToDoList";
 import {AddItemForm} from "./AddItemForm";
 import {AppBar, Button, Container, Grid, IconButton, Paper, Toolbar, Typography} from "@material-ui/core";
 import {Menu} from "@material-ui/icons";
@@ -8,6 +7,7 @@ import {RootState} from "../state/store";
 import {useAppDispatch, useAppSelector} from "../state/hooks";
 import {todolistsActions} from "../state/todolists-reducer";
 import {shallowEqual} from "react-redux";
+import {ToDoList} from "./ToDoList";
 
 
 export type TaskType = {
@@ -26,32 +26,22 @@ export type TasksStateType = {
 }
 
 
-function AppRedux() {
+const AppRedux = React.memo(function () {
+    console.log('App rendered')
+
     const todoLists = useAppSelector((state: RootState) => state.todolists, shallowEqual) as TodoListType[]
     const tasks = useAppSelector((state: RootState) => state.tasks, shallowEqual) as TasksStateType
     const dispatch = useAppDispatch()
 
-    const addTodoList = (title: string) => {
+    const addTodoList = useCallback((title: string) => {
         dispatch(todolistsActions.addTodoListAC(title))
-    }
-
-    const filterTasks = (todoList: TodoListType) => {
-        switch (todoList.filter) {
-            case "active":
-                return tasks[todoList.id].filter(t => !t.isDone)
-            case "completed":
-                return tasks[todoList.id].filter(t => t.isDone)
-            default:
-                return tasks[todoList.id]
-        }
-    }
-
+    },[dispatch])
 
     const todoListsComponents = todoLists.map(t => {
         const props = {
             todoListID: t.id,
             title: t.title,
-            tasks: filterTasks(t),
+            tasks: tasks[t.id],
             filter: t.filter
         }
 
@@ -91,6 +81,6 @@ function AppRedux() {
           </Container>
       </div>
     );
-}
+})
 
 export default AppRedux;
